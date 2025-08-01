@@ -27,29 +27,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $phone = $_POST["phone"];
         $address = $_POST["address"];
         $hobby = $_POST["hobby"];
-        
-        $domain = substr(strrchr($email, "@"), 1);
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $errorMessage = "Invalid email format!";
-        } elseif (!checkdnsrr($domain, "MX")) {
-            $errorMessage = "Email domain is invalid!";
+
+        if (!empty($name) && !empty($email) && !empty($hobby) && !empty($address) && !empty($phone) && !empty($ext)) {
+
+            $domain = substr(strrchr($email, "@"), 1);
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $errorMessage = "Invalid email format!";
+            } elseif (!checkdnsrr($domain, "MX")) {
+                $errorMessage = "Email domain is invalid!";
+            }
+
+            if (empty($errorMessage)) {
+                $updateClient = "UPDATE clients SET name='$name', email='$email', hobby = '$hobby', address= '$address', ext='$ext', phone='$phone' where id = $id";
+                $result = mysqli_query($conn, $updateClient);
+
+                if (!$result) {
+                    die("Invalid Query" . mysqli_error($conn));
+                }
+
+                header("location: index.php");
+                exit;
+            }
+        } else{
+            $errorMessage = "All fields are required";
         }
-
-        if(empty($errorMessage)){
-        $updateClient = "UPDATE clients SET name='$name', email='$email', hobby = '$hobby', address= '$address', ext='$ext', phone='$phone' where id = $id";
-        $result = mysqli_query($conn, $updateClient);
-
-        if (!$result) {
-            die("Invalid Query" . mysqli_error($conn));
-        }
-
-        header("location: index.php");
-        exit;
-        }
-
-
-
-
     }
 }
 ?>
@@ -83,7 +84,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="row mb-3">
                 <label class="col-sm-3 col-form-label" for="email">Email:</label>
                 <div>
-                    <input class="form-control border-black" type="email" name="email" value="<?php echo $email ?>"   pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
+                    <input class="form-control border-black" type="email" name="email" value="<?php echo $email ?>"
+                        pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
                 </div>
             </div>
 
@@ -113,32 +115,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="row mb-3">
                 <div class="col-sm-2">
                     <label for="ext" class="form-label">Country Code</label>
-                    <input 
-                    type="text" 
-                    minlength = 3
-                    title="Please enter a valid country code +XX." 
-                    pattern="^\+\d{1,4}$"  
-                    class="form-control border-black" 
-                    name="ext" 
-                    placeholder="+961"
-                    value="<?php echo htmlspecialchars($ext); ?>"
-
-                    >
+                    <input type="text" minlength=3 title="Please enter a valid country code +XX." pattern="^\+\d{1,4}$"
+                        class="form-control border-black" name="ext" placeholder="+961"
+                        value="<?php echo htmlspecialchars($ext); ?>">
                 </div>
 
                 <div class="col-sm-6">
                     <label for="phone" class="form-label">Phone</label>
-                    <input 
-                    type="text" 
-                    class="form-control border-black" 
-                    name="phone"
-                    placeholder="70123456" 
-                    minlength = 5  
-                    maxlength = 10 
-                    pattern="^\d{7,10}$"   
-                    title="Enter only digits (7 to 10 numbers)"
-                    value="<?php echo htmlspecialchars($phone); ?>"
-                    >
+                    <input type="text" class="form-control border-black" name="phone" placeholder="70123456" minlength=5
+                        maxlength=10 pattern="^\d{7,10}$" title="Enter only digits (7 to 10 numbers)"
+                        value="<?php echo htmlspecialchars($phone); ?>">
                 </div>
             </div>
 

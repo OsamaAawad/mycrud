@@ -22,7 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $phone = mysqli_real_escape_string($conn, $_POST["phone"]);
 
 
-        if (!empty($name) && !empty($email) && !empty($hobby) && !empty($address) && !empty($phone)) {
+        if (!empty($name) && !empty($email) && !empty($hobby) && !empty($address) && !empty($phone) && !empty($ext)) {
             $domain = substr(strrchr($email, "@"), 1);
 
             if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
