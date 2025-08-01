@@ -11,6 +11,7 @@ $ext = "";
 
 $errorMessage = "";
 
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST["name"]) && isset($_POST["email"]) && isset($_POST["hobby"]) && isset($_POST["address"]) && isset($_POST["ext"]) && isset($_POST["phone"])) {
 
@@ -21,6 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $ext = mysqli_real_escape_string($conn, $_POST["ext"]);
     $phone = mysqli_real_escape_string($conn, $_POST["phone"]);
 
+    
 
         if (!empty($name) && !empty($email) && !empty($hobby) && !empty($address) && !empty($phone) && !empty($ext)) {
             $domain = substr(strrchr($email, "@"), 1);
@@ -30,8 +32,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
             elseif (!checkdnsrr($domain, "MX")) {
                 $errorMessage = "Email domain is invalid or doesn't accept email!";
+            } else {
+                $checkQuery = "SELECT * FROM clients WHERE email = '$email' AND name = '$name'";
+                $result = mysqli_query($conn, $checkQuery);
+
+                if (mysqli_num_rows($result) > 0) {
+                    $errorMessage = "A client with this name and email already exists.";
+                }
             }
-            
+
             if(empty($errorMessage)){
             $newClient = "INSERT INTO clients (name, email, hobby, address, ext, phone)
               VALUES ('$name', '$email', '$hobby', '$address', '$ext', '$phone')";

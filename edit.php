@@ -35,6 +35,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $errorMessage = "Invalid email format!";
             } elseif (!checkdnsrr($domain, "MX")) {
                 $errorMessage = "Email domain is invalid!";
+            } else {
+                $checkQuery = "SELECT * FROM clients WHERE email = '$email' AND name = '$name'";
+                $result = mysqli_query($conn, $checkQuery);
+
+                if (mysqli_num_rows($result) > 0) {
+                    $errorMessage = "A client with this name and email already exists.";
+                }
             }
 
             if (empty($errorMessage)) {
