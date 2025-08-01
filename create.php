@@ -18,14 +18,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $email = $_POST["email"];
         $hobby = $_POST["hobby"];
         $address = $_POST["address"];
-        $phone = $_POST["ext"] . $_POST["phone"];
+        $ext = $_POST["ext"];
+        $phone = $_POST["phone"];
+        $fullPhonw = $ext . $phone;
 
         if (!empty($name) && !empty($email) && !empty($hobby) && !empty($address) && !empty($phone)) {
+            $domain = substr(strrchr($email, "@"), 1);
+
             if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
                 $errorMessage = "Invalid Email Format!";
             }
+            elseif (!checkdnsrr($domain, "MX")) {
+                $errorMessage = "Email domain is invalid or doesn't accept email!";
+            }
+            
+            if(empty($errorMessage)){
             $newClient = "INSERT INTO clients (name, email, hobby, address, phone)
-              VALUES ('$name', '$email', '$hobby', '$address', '$phone')";
+              VALUES ('$name', '$email', '$hobby', '$address', '$fullPhone')";
 
             $result = mysqli_query($conn, $newClient);
 
@@ -36,6 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $errorMessage = "";
             header("location: index.php");
             exit;
+        }
         } else {
             $errorMessage = "All the fields are required.";
         }
@@ -109,6 +119,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     class="form-control border-black" 
                     name="ext" 
                     placeholder="+961"
+                    value = <?php echo $ext ?>
                     >
                 </div>
 
