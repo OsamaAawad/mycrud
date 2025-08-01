@@ -7,21 +7,23 @@ $email = "";
 $hobby = "";
 $address = "";
 $phone = "";
-
+$ext = "";
 
 $errorMessage = "";
-$successMessage = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_POST["name"]) && isset($_POST["email"]) && isset($_POST["hobby"]) && isset($_POST["address"]) && isset($_POST["phone"])) {
+    if (isset($_POST["name"]) && isset($_POST["email"]) && isset($_POST["hobby"]) && isset($_POST["address"]) && isset($_POST["ext"]) && isset($_POST["phone"])) {
 
         $name = $_POST["name"];
         $email = $_POST["email"];
         $hobby = $_POST["hobby"];
         $address = $_POST["address"];
-        $phone = $_POST["phone"];
+        $phone = $_POST["ext"] . $_POST["phone"];
 
         if (!empty($name) && !empty($email) && !empty($hobby) && !empty($address) && !empty($phone)) {
+            if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
+                $errorMessage = "Invalid Email Format!";
+            }
             $newClient = "INSERT INTO clients (name, email, hobby, address, phone)
               VALUES ('$name', '$email', '$hobby', '$address', '$phone')";
 
@@ -70,8 +72,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="row mb-3">
                 <label class="col-sm-3 col-form-label" for="email">Email:</label>
                 <div>
-                    <input class="form-control border-black" type="text" name="email" value="<?php echo $email ?>">
-                </div>
+                    <input class="form-control border-black" type="email" name="email" value="<?php echo $email ?>" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">                </div>
             </div>
 
             <div class="row mb-3">
@@ -98,12 +99,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
             <div class="row mb-3">
-                <label class="col-sm-3 col-form-label" for="phone">Phone:</label>
-                <div>
-                    <input class="form-control border-black border-black" type="text" name="phone"
-                        value="<?php echo $phone ?>">
+                <div class="col-sm-2">
+                    <label for="ext" class="form-label">Country Code</label>
+                    <input 
+                    type="text" 
+                    minLength = 2
+                    title="Please enter a valid country code +XX." 
+                    pattern="^\+\d{1,4}$"  
+                    class="form-control border-black" 
+                    name="ext" 
+                    placeholder="+961"
+                    >
+                </div>
+
+                <div class="col-sm-6">
+                    <label for="phone" class="form-label">Phone</label>
+                    <input 
+                    type="text" 
+                    class="form-control border-black" 
+                    name="phone"
+                    placeholder="70123456" 
+                    minLength = 5  
+                    maxLength = 10 
+                    pattern="^\d{7,10}$"   
+                    title="Enter only digits (7 to 10 numbers)"
+                    value="<?php echo htmlspecialchars($phone); ?>"
+                    >
                 </div>
             </div>
+
 
             <div class="my-3">
                 <a href="index.php" class="btn btn-outline-primary ">Cancel</a>
