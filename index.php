@@ -48,7 +48,7 @@
                             <td>$row[id]</td>
                             <td>$row[name]</td>
                             <td>$row[email]</td>
-                            <td>$row[phone]</td>
+                            <td>$row[ext] $row[phone]</td>
                             <td>$row[hobby]</td>
                             <td>$row[address]</td>
                             <td>$row[created_at]</td>

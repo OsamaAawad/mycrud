@@ -17,17 +17,26 @@ $email = $row["email"];
 $phone = $row["phone"];
 $address = $row["address"];
 $hobby = $row["hobby"];
-
+$ext = $row["ext"];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST["name"]) && isset($_POST["email"]) && isset($_POST["hobby"]) && isset($_POST["address"]) && isset($_POST["ext"]) && isset($_POST["phone"])) {
         $name = $_POST["name"];
         $email = $_POST["email"];
-        $phone = $_POST["ext"] . $_POST["phone"];
+        $ext = $_POST["ext"];
+        $phone = $_POST["phone"];
         $address = $_POST["address"];
         $hobby = $_POST["hobby"];
+        
+        $domain = substr(strrchr($email, "@"), 1);
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errorMessage = "Invalid email format!";
+        } elseif (!checkdnsrr($domain, "MX")) {
+            $errorMessage = "Email domain is invalid!";
+        }
 
-        $updateClient = "UPDATE clients SET name='$name', email='$email', hobby = '$hobby', address= '$address', phone='$phone' where id = $id";
+        if(empty($errorMessage)){
+        $updateClient = "UPDATE clients SET name='$name', email='$email', hobby = '$hobby', address= '$address', ext='$ext', phone='$phone' where id = $id";
         $result = mysqli_query($conn, $updateClient);
 
         if (!$result) {
@@ -36,6 +45,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         header("location: index.php");
         exit;
+        }
+
+
+
 
     }
 }
@@ -102,12 +115,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <label for="ext" class="form-label">Country Code</label>
                     <input 
                     type="text" 
-                    minLength = 2
+                    minlength = 3
                     title="Please enter a valid country code +XX." 
                     pattern="^\+\d{1,4}$"  
                     class="form-control border-black" 
                     name="ext" 
                     placeholder="+961"
+                    value="<?php echo htmlspecialchars($ext); ?>"
+
                     >
                 </div>
 
@@ -118,8 +133,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     class="form-control border-black" 
                     name="phone"
                     placeholder="70123456" 
-                    minLength = 5  
-                    maxLength = 10 
+                    minlength = 5  
+                    maxlength = 10 
                     pattern="^\d{7,10}$"   
                     title="Enter only digits (7 to 10 numbers)"
                     value="<?php echo htmlspecialchars($phone); ?>"

@@ -14,13 +14,13 @@ $errorMessage = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST["name"]) && isset($_POST["email"]) && isset($_POST["hobby"]) && isset($_POST["address"]) && isset($_POST["ext"]) && isset($_POST["phone"])) {
 
-        $name = $_POST["name"];
-        $email = $_POST["email"];
-        $hobby = $_POST["hobby"];
-        $address = $_POST["address"];
-        $ext = $_POST["ext"];
-        $phone = $_POST["phone"];
-        $fullPhonw = $ext . $phone;
+    $name = mysqli_real_escape_string($conn, $_POST["name"]);
+    $email = mysqli_real_escape_string($conn, $_POST["email"]);
+    $hobby = mysqli_real_escape_string($conn, $_POST["hobby"]);
+    $address = mysqli_real_escape_string($conn, $_POST["address"]);
+    $ext = mysqli_real_escape_string($conn, $_POST["ext"]);
+    $phone = mysqli_real_escape_string($conn, $_POST["phone"]);
+
 
         if (!empty($name) && !empty($email) && !empty($hobby) && !empty($address) && !empty($phone)) {
             $domain = substr(strrchr($email, "@"), 1);
@@ -33,8 +33,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
             
             if(empty($errorMessage)){
-            $newClient = "INSERT INTO clients (name, email, hobby, address, phone)
-              VALUES ('$name', '$email', '$hobby', '$address', '$fullPhone')";
+            $newClient = "INSERT INTO clients (name, email, hobby, address, ext, phone)
+              VALUES ('$name', '$email', '$hobby', '$address', '$ext', '$phone')";
 
             $result = mysqli_query($conn, $newClient);
 
@@ -113,13 +113,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <label for="ext" class="form-label">Country Code</label>
                     <input 
                     type="text" 
-                    minLength = 2
+                    minlength = 2
                     title="Please enter a valid country code +XX." 
                     pattern="^\+\d{1,4}$"  
                     class="form-control border-black" 
                     name="ext" 
                     placeholder="+961"
-                    value = <?php echo $ext ?>
+                    value = <?php echo htmlspecialchars($ext) ?>
                     >
                 </div>
 
@@ -130,8 +130,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     class="form-control border-black" 
                     name="phone"
                     placeholder="70123456" 
-                    minLength = 5  
-                    maxLength = 10 
+                    minlength = 5  
+                    maxlength = 10 
                     pattern="^\d{7,10}$"   
                     title="Enter only digits (7 to 10 numbers)"
                     value="<?php echo htmlspecialchars($phone); ?>"
